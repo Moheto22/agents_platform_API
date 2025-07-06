@@ -1,3 +1,5 @@
+from typing import re
+
 import bcrypt
 from cryptography.fernet import Fernet, InvalidToken
 
@@ -52,8 +54,4 @@ class Security:
             return fernet.decrypt(text.encode()).decode()
         except InvalidToken:
             raise ValueError("Decryption failed. Invalid token or key.")
-
-
-
-
 

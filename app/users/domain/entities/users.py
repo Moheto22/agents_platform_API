@@ -10,6 +10,7 @@ from app.users.domain.value_objects.user_id import UserId
 from app.users.domain.value_objects.user_name import UserName
 from app.users.domain.value_objects.string_cheker import UserStringData
 from app.users.domain.value_objects.user_photo import UserPhotoUrl
+from app.users.domain.value_objects.user_rol import UserRol
 from app.users.domain.value_objects.user_surname import UserSurname
 from app.users.domain.value_objects.user_tenant import UserTenant
 
@@ -26,7 +27,10 @@ class Users(BaseModel):
     tenant : UserTenant = Field(...,description = "The schema where is the user saved")
     photo_url : UserPhotoUrl = Field(...,description= "The url of the avatar image of the user")
     deleted_at : Optional[Timestamp] =Field(default=None,description="The date since the user was deleted")
-    refresh_token : UserStringData = Field(description="The refresh token of the user to get a new JWT token")
+    refresh_token : Optional[str] = Field(description="The refresh token of the user to get a new JWT token")
+    id_rol : Optional[UserRol] = Field(default=None,description="The id of the rol of the user")
+    secret : Optional[str] = Field(default=None,description="The secret of the user")
+    id_user_created : Optional[UserId] = Field(default=None,description="The id of the user who created the user")
 
     # El constructor que se usa cuando procede de la BDD
     @classmethod
@@ -43,7 +47,10 @@ class Users(BaseModel):
             tenant: str,
             photo_url: str,
             deleted_at: Optional[datetime],
-            refresh_token: str
+            refresh_token: str,
+            id_rol: Optional[int],
+            secret: str,
+            id_user_created : Optional[int]
     ) -> "Users":
         """
             Create a new User instance which comes from database.
@@ -61,6 +68,7 @@ class Users(BaseModel):
                 tenant (str): Schema identifier (multi-tenant system).
                 photo_url (str): URL of the user’s avatar image.
                 refresh_token (str): JWT refresh token for session management.
+                id_rol (int): The id of the rol of the user.
 
             Returns:
                 Users: A complete User domain entity persisted in the database.
@@ -77,7 +85,10 @@ class Users(BaseModel):
             tenant=UserTenant(tenant),
             photo_url=UserPhotoUrl(photo_url),
             deleted_at=Timestamp(deleted_at),
-            refresh_token=UserStringData(refresh_token)
+            refresh_token=refresh_token,
+            id_rol= UserRol(id_rol),
+            secret = secret,
+            id_user_created = UserId(id_user_created)
         )
 
 
@@ -90,8 +101,11 @@ class Users(BaseModel):
             password_hash: str,
             description: str,
             tenant: str,
-            photo_url: str,
-            refresh_token: str
+            photo_url: Optional[str],
+            refresh_token: Optional[str],
+            secret:Optional[str],
+            id_rol : Optional[int],
+            id_user_created : Optional[int]
             )-> "Users":
         """
             Create a new User instance that has not yet been persisted in the database.
@@ -105,6 +119,8 @@ class Users(BaseModel):
                 tenant (str): Schema identifier (multi-tenant system).
                 photo_url (str): URL of the user’s avatar image.
                 refresh_token (str): JWT refresh token for session management.
+                secret (str): The secret of the user.
+                id_rol (int): The id of the rol of the user.
 
             Returns:
                 Users: A complete User domain entity ready to be persisted.
@@ -117,14 +133,16 @@ class Users(BaseModel):
             description=UserDescription(description),
             tenant=UserTenant(tenant),
             photo_url=UserPhotoUrl(photo_url),
-            refresh_token=UserStringData(refresh_token)
+            refresh_token=refresh_token,
+            id_rol = UserRol(id_rol),
+            secret = secret,
+            id_user_created = UserId(id_user_created)
         )
 
 
     def to_raw_dict(self) -> dict:
         """
             Create a dictionary with the data of the Users object.
-
             Args:
                 None
             Returns:

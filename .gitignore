@@ -1,0 +1,17 @@
+# Entorno virtual
+.venv/
+env/
+__pycache__/
+*.py[cod]
+
+# Archivos temporales
+*.log
+*.tmp
+*.bak
+
+# Configuración del editor
+.idea/
+
+# Archivos sensibles
+.env
+*.secret
